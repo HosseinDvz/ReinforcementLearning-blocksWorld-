@@ -1,1 +1,1 @@
-from gymnasium_env.envs.grid_world import GridWorldEnv
+from blocksworld_env.envs.blocks_world import BlocksWorldEnv

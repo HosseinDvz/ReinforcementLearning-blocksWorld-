@@ -1,6 +1,6 @@
 import gymnasium
-import gymnasium_env
-env = gymnasium.make("gymnasium_env/GridWorld-v0", render_mode="human")
+import blocksworld_env
+env = gymnasium.make("blocksworld_env/BlocksWorld-v0", render_mode="human")
 observation, info = env.reset()
 
 # do a random action 1000 times

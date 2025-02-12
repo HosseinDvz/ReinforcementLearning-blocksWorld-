@@ -6,12 +6,6 @@ from swiplserver import PrologMQI, PrologThread
 import numpy as np
 
 
-class Actions(Enum):
-    right = 0
-    up = 1
-    left = 2
-    down = 3
-
 
 class GridWorldEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
@@ -23,13 +17,19 @@ class GridWorldEnv(gym.Env):
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2,
         # i.e. MultiDiscrete([size, size]).
+
+        self.mqi = PrologMQI()
+        self.prolog_thread = self.mqi.create_thread()
+        result = self.prolog_thread.query('[blocks_world]')
+
+        
         self.observation_space = spaces.Dict(
             {
                 "agent": spaces.Box(0, size - 1, shape=(2,), dtype=int),
                 "target": spaces.Box(0, size - 1, shape=(2,), dtype=int),
             }
         )
-
+        print(self.observation_space['agent'])
         # We have 4 actions, corresponding to "right", "up", "left", "down", "right"
         self.action_space = spaces.Discrete(4)
 

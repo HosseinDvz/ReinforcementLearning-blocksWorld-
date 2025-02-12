@@ -1,3 +1,6 @@
+
+
+
 import gymnasium as gym
 from gymnasium import spaces
 import pygame
@@ -7,7 +10,7 @@ import numpy as np
 
 
 
-class GridWorldEnv(gym.Env):
+class BlocksWorldEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
     def __init__(self, render_mode=None, size=5):
@@ -25,7 +28,7 @@ class GridWorldEnv(gym.Env):
      
         #print(result)
 
-env = GridWorldEnv()
+env = BlocksWorldEnv()
 
 states_dict = {}
 prolog_states =  env.prolog_thread.query('state(S)') 
@@ -54,11 +57,10 @@ for i,A in enumerate(result):
 print(actions_dict)
 
 observation_space = spaces.Discrete(len(states_dict))
+print(len(states_dict))
 action_space = spaces.Discrete(len(actions_dict))
+print(len(actions_dict))
 
 
-
-
-)
-
-#list(states_dict.keys())[list(states_dict.values()).index(state)]
+print(observation_space)
+display = Display()
