@@ -21,7 +21,7 @@ class BlocksWorldEnv(gym.Env):
 
         self.mqi = PrologMQI()
         self.prolog_thread = self.mqi.create_thread()
-        self.prolog_thread.query('[blocks_world]')
+        self.prolog_thread.query('[blocks_world_v2]')
 
 
         prolog_states = self.prolog_thread.query('state(S)') 
@@ -31,7 +31,9 @@ class BlocksWorldEnv(gym.Env):
         for i, state in enumerate(prolog_states):
             self.states_dict[state['S']] = i
             self.int_to_state[i] = state['S'] #i is unique can be used as key. most efficient way
-        #print(self.states_dict)
+        print(self.states_dict)
+        #print('*'*15)
+        #print(self.int_to_state)
 
         
         actions = self.prolog_thread.query('action(A)')
@@ -50,7 +52,7 @@ class BlocksWorldEnv(gym.Env):
             action_string += ')'
             self.actions_dict[i] = action_string
 
-        print(self.actions_dict)
+        #print(self.actions_dict)
 
 
         self.acttion_to_int = {val: key for key, val in self.actions_dict.items()}
@@ -61,7 +63,7 @@ class BlocksWorldEnv(gym.Env):
         self.action_space = spaces.Discrete(len(self.actions_dict))
 
         self.init_state = list(self.states_dict.keys())[0]
-        print(f'initial state is: {self.init_state}')
+        #print(f'initial state is: {self.init_state}')
 
         self.display = Display()
 
@@ -78,11 +80,11 @@ class BlocksWorldEnv(gym.Env):
     def reset(self, seed=None, options=None):
 
         #generating a random target for target
-        #self.target_num = np.random.randint(1,120)
-        self.target_num = 10
+        self.target_num = np.random.randint(1,14400)
+        #self.target_num = 10
         # transforming number to state
-        self.target_str = self.int_to_state[self.target_num] #target state
-        #print(f'target is: {self.target_str}')
+        self.target_str = self.int_to_state[self.target_num][3:] #target state
+        print(f'target is: {self.target_str}')
         self.display.target = self.target_str
 
         #issuing the prolog reset query
@@ -91,7 +93,8 @@ class BlocksWorldEnv(gym.Env):
         # retrieving current state - agent state
         result = self.prolog_thread.query('current_state(State)')
         #print(result)
-        self.state_str = result[0]['State']
+        self.state_str = result[0]['State'] + self.target_str
+        print(f'state string is :{self.state_str}')
         self.state_num = self.states_dict[self.state_str]
 
 
@@ -116,8 +119,9 @@ class BlocksWorldEnv(gym.Env):
         done = False
         if result:
 
-            self.state_str = self.prolog_thread.query('current_state(State)')[0]['State']
-            done = (self.state_str == self.target_str)
+            three_digit_stat = self.prolog_thread.query('current_state(State)')[0]['State']
+            done = (three_digit_stat == self.target_str)
+            self.state_str = three_digit_stat + self.target_str
 
             if done:
                 reward = 100
