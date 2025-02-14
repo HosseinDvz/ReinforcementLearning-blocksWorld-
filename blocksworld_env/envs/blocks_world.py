@@ -64,26 +64,39 @@ class BlocksWorldEnv(gym.Env):
 
         self.display = Display()
 
-        
+    def _get_obs(self):
+        return {"agent": self.state_num, "target": self.target_num}
+    
+    def _get_info(self):
+        return {
+            "distance":
+                self.state_num - self.target_num
+            
+        }
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
 
         #generating a random target for target
-        target_num = np.random.randint(1,120)
+        self.target_num = np.random.randint(1,120)
 
         # transforming number to state
-        self.target_state = self.int_to_state[target_num] #target state
-        print(f'target is: {self.target_state}')
-        self.display.target = self.target_state
+        self.target_str = self.int_to_state[self.target_num] #target state
+        print(f'target is: {self.target_str}')
+        self.display.target = self.target_str
 
         #issuing the prolog reset query
         self.prolog_thread.query('reset')
 
         # retrieving current state - agent state
         result = self.prolog_thread.query('current_state(State)')
+        #print(result)
         self.state_str = result[0]['State']
+        self.state_num = self.states_dict[self.state_str]
 
-        return self.state_str, self.target_state
+        observation = self._get_obs()
+        info = self._get_info()
+
+        return observation,info
         
 
     def step(self, action):
@@ -101,7 +114,7 @@ class BlocksWorldEnv(gym.Env):
         if result:
 
             self.state_str = self.prolog_thread.query('current_state(State)')[0]['State']
-            done = (self.state_str == self.target_state)
+            done = (self.state_str == self.target_str)
 
             if done:
                 reward = 100
@@ -113,22 +126,26 @@ class BlocksWorldEnv(gym.Env):
         
         self.display.step(self.state_str)
 
+        observation = self._get_obs()
+        info = self._get_info()
+
         #if self.render_mode == "human":
         #    self._render_frame()
         
         print(f'final current status: {self.state_str}', f'reward is: {reward}')
-        return self.state_str, reward, done, False
+        return observation, reward, done, False, info
 
 
         
 
+if __name__ == '__main__':
 
-env = BlocksWorldEnv()
-#states = env.states_dict
-#print(states.get('1a4', 00))
+    env = BlocksWorldEnv()
+    #states = env.states_dict
+    #print(states.get('1a4', 00))
 
-state, target = env.reset()
+    state, target = env.reset()
 
-for i in [64, 88, 87,75]:
+    for i in [64, 88, 87,75]:
 
-    print(env.step(i))
+        print(env.step(i))
