@@ -59,7 +59,7 @@ for i in range(episodes):
         # update state
         state = next_state
 
-    print(f'sum of rewards')
+    print(f'sum of rewards: {sum(episode_reward)}')
     all_rewards.append(sum(episode_reward))
 
     # The more we learn, the less we take random actions
