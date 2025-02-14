@@ -62,6 +62,8 @@ class BlocksWorldEnv(gym.Env):
         self.init_state = list(self.states_dict.keys())[0]
         print(f'initial state is: {self.init_state}')
 
+        self.display = Display()
+
         
 
     def reset(self):
@@ -72,6 +74,7 @@ class BlocksWorldEnv(gym.Env):
         # transforming number to state
         self.target_state = self.int_to_state[target_num] #target state
         print(f'target is: {self.target_state}')
+        self.display.target = self.target_state
 
         #issuing the prolog reset query
         self.prolog_thread.query('reset')
@@ -85,15 +88,21 @@ class BlocksWorldEnv(gym.Env):
 
     def step(self, action):
         
-        current_state = self.prolog_thread.query('current_state(State)')
-        print(f'state before action: {current_state}')
+        #current_state = self.prolog_thread.query('current_state(State)')
+        print(f'state before action: {self.state_str}')
+
+        # getting move str from the action number
         act = self.actions_dict[action]
+
+        # result is true of action is possible
         result = self.prolog_thread.query(f'step({act})')
         #print(result)
-        
+        done = False
         if result:
-            current_state = self.prolog_thread.query('current_state(State)')
-            done = (current_state[0]['State'] == self.target_state)
+
+            self.state_str = self.prolog_thread.query('current_state(State)')[0]['State']
+            done = (self.state_str == self.target_state)
+
             if done:
                 reward = 100
             else:
@@ -102,9 +111,13 @@ class BlocksWorldEnv(gym.Env):
         else:
             reward = -100
         
+        self.display.step(self.state_str)
+
+        #if self.render_mode == "human":
+        #    self._render_frame()
         
-        print(f'final current status: {current_state}')
-        return ''
+        print(f'final current status: {self.state_str}', f'reward is: {reward}')
+        return self.state_str, reward, done, False
 
 
         
