@@ -78,7 +78,7 @@ class BlocksWorldEnv(gym.Env):
 
         # retrieving current state - agent state
         result = self.prolog_thread.query('current_state(State)')
-        self.state_str = result[0]('State')
+        self.state_str = result[0]['State']
 
         return self.state_str, self.target_state
         
@@ -90,8 +90,7 @@ class BlocksWorldEnv(gym.Env):
         act = self.actions_dict[action]
         result = self.prolog_thread.query(f'step({act})')
         #print(result)
-        current_state = self.prolog_thread.query('current_state(State)')
-        '''
+        
         if result:
             current_state = self.prolog_thread.query('current_state(State)')
             done = (current_state[0]['State'] == self.target_state)
@@ -103,8 +102,8 @@ class BlocksWorldEnv(gym.Env):
         else:
             reward = -100
         
-        '''
-        print(current_state)
+        
+        print(f'final current status: {current_state}')
         return ''
 
 
@@ -114,6 +113,8 @@ class BlocksWorldEnv(gym.Env):
 env = BlocksWorldEnv()
 #states = env.states_dict
 #print(states.get('1a4', 00))
+
+state, target = env.reset()
 
 for i in [64, 88, 87,75]:
 
