@@ -19,7 +19,7 @@ class BlocksWorldEnv(gym.Env):
         self.prolog_thread = self.mqi.create_thread()
         self.prolog_thread.query('[blocks_world_v2]')
 
-        print('hello from last version')
+        print('hello from target version')
 
         prolog_states = self.prolog_thread.query('state(S)') 
 
@@ -35,7 +35,8 @@ class BlocksWorldEnv(gym.Env):
         
         actions = self.prolog_thread.query('action(A)')
         self.actions_dict = {}
-        #print(result)
+        #print(actions)
+        # explanation for this code is in oblocks_world_v0
         for i,A in enumerate(actions):
             action_string = A['A']['functor']
             first=True
@@ -48,9 +49,6 @@ class BlocksWorldEnv(gym.Env):
                 action_string += str(arg)
             action_string += ')'
             self.actions_dict[i] = action_string
-
-        #print(self.actions_dict)
-
 
         self.acttion_to_int = {val: key for key, val in self.actions_dict.items()}
         #print(self.acttion_to_int)
@@ -82,13 +80,13 @@ class BlocksWorldEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
 
-        #generating a random number in the 1
+        #generating a random number between 1, 14400
         rand_sate = np.random.randint(1,self.observation_space['agent'].n)
 
         #finding the target state by selecting the last three characters
         self.target_str_3char = self.int_to_state[rand_sate][3:]
 
-        #creating full target character - Example = full target char must be '12a12a'
+        #creating full target character - Example = full target state char must be '12a12a'
         self.full_target_str = self.target_str_3char + self.target_str_3char
     
         self.target_num = self.states_dict[self.full_target_str ]
@@ -120,9 +118,6 @@ class BlocksWorldEnv(gym.Env):
         
 
     def step(self, action):
-        
-        #current_state = self.prolog_thread.query('current_state(State)')
-        #print(f'state before action: {self.state_str}')
 
         # getting move str from the action number
         act = self.actions_dict[action]
@@ -145,16 +140,13 @@ class BlocksWorldEnv(gym.Env):
         else:
             reward = -100
         
-        self.display.step(self.state_str)
+        self.display.step(self.state_str) # works with 6 chars state
         
 
         self.state_num = self.states_dict[self.state_str]
         #observation = self.state_num
         observation = self._get_obs()
         info = self._get_info()
-
-        #if self.render_mode == "human":
-        #    self._render_frame()
         
         #print(f'final current status: {self.state_str}', f'reward is: {reward}')
         return observation, reward, done, False, info

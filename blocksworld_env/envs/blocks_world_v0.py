@@ -14,9 +14,6 @@ class BlocksWorldEnv_v0(gym.Env):
         self.size = size  # The size of the square grid
         self.window_size = 512  # The size of the PyGame window
 
-        # Observations are dictionaries with the agent's and the target's location.
-        # Each location is encoded as an element of {0, ..., `size`}^2,
-        # i.e. MultiDiscrete([size, size]).
 
         self.mqi = PrologMQI()
     
@@ -47,8 +44,8 @@ class BlocksWorldEnv_v0(gym.Env):
         for i,A in enumerate(actions):
             action_string = A['A']['functor'] # action "move" will be extracted from dict
             first=True
-            for arg in A['A']['args']: # args are which, from, to
-                if first:
+            for arg in A['A']['args']: # args are block, from, to. this for loop concatenates move(agrg1,arg2,arg3)
+                if first: # 
                     first = False
                     action_string += '('
                 else:
@@ -60,7 +57,7 @@ class BlocksWorldEnv_v0(gym.Env):
         #print(self.actions_dict)
 
         # values of above dict are unique and can be used as key. This dic was created
-        # to easily map action atring to corrsponding number
+        # to easily map action atrings to corrsponding numbers
         self.acttion_to_int = {val: key for key, val in self.actions_dict.items()}
         #print(self.acttion_to_int)
 
@@ -74,9 +71,6 @@ class BlocksWorldEnv_v0(gym.Env):
         #self.observation_space = spaces.Discrete(len(self.states_dict))
         #print(self.observation_space.n)
         self.action_space = spaces.Discrete(len(self.actions_dict))
-
-        #self.init_state = list(self.states_dict.keys())[0]
-        #print(f'initial state is: {self.init_state}')
 
         self.display = Display()
 
@@ -93,10 +87,10 @@ class BlocksWorldEnv_v0(gym.Env):
     def reset(self, seed=None, options=None):
 
         #generating a random target for target
-        #self.target_num = np.random.randint(1,120)
-        self.target_num = 10
+        self.target_num = np.random.randint(1,120)
+        #self.target_num = 10
 
-        # transforming number to state
+        # finding correspomding state string from number
         self.target_str = self.int_to_state[self.target_num] #target state
         #print(f'target is: {self.target_str}')
         self.display.target = self.target_str
@@ -113,23 +107,18 @@ class BlocksWorldEnv_v0(gym.Env):
 
 
         #observation = self.state_num
-        #observation = self._get_obs()['agent']
         observation = self._get_obs()
         info = self._get_info()
         
-
         return observation,info
         
 
     def step(self, action):
         
-        #current_state = self.prolog_thread.query('current_state(State)')
-        #print(f'state before action: {self.state_str}')
-
         # getting move str from the action number
         act = self.actions_dict[action]
 
-        # result is true of action is possible
+        # result is true if action is possible
         result = self.prolog_thread.query(f'step({act})')
         #print(result)
         done = False
@@ -146,23 +135,17 @@ class BlocksWorldEnv_v0(gym.Env):
         else:
             reward = -100
         
-        self.display.step(self.state_str)
+        self.display.step(self.state_str) 
 
         self.state_num = self.states_dict[self.state_str]
-        observation = self._get_obs()
-        #observation = self.state_num
-        #observation = self._get_obs()['agent']
-        info = self._get_info()
 
-        #if self.render_mode == "human":
-        #    self._render_frame()
+        observation = self._get_obs()
+        info = self._get_info()
         
         #print(f'final current status: {self.state_str}', f'reward is: {reward}')
         return observation, reward, done, False, info
 
         
-        
-
 if __name__ == '__main__':
 
     env = BlocksWorldEnv_v0()

@@ -2,6 +2,7 @@ import gymnasium as gym
 import blocksworld_env
 import numpy as np
 import time
+import matplotlib.pyplot as plt
 
 
 env = gym.make("blocksworld_env/BlocksWorld-v1", render_mode="human")
@@ -11,11 +12,24 @@ env = gym.make("blocksworld_env/BlocksWorld-v1", render_mode="human")
 numstates= env.observation_space['agent'].n
 numactions = env.action_space.n
 # QTable : contains the Q-Values for every (state,action) pair
+
+
+    
 qtable = np.random.rand(numstates, numactions).tolist()
 
+def load_qtable(filename="qtable.pkl"):
+    try:
+        with open(filename, "rb") as f:
+            qtable = pickle.load(f)
+        print(f"Q-table loaded from {filename}")
+        return qtable
+    except FileNotFoundError:
+        print("No saved Q-table found, starting fresh.")
+        return None
+    
 
 # hyperparameters
-episodes = 50  
+episodes = 5000 
 alpha = 1 #learning rate
 gamma = 0.4 #increased gamma to assign more weight to value of next state
 epsilon = 0.01 #decrease epsilon to decrease the chance of taking random actions
@@ -25,6 +39,8 @@ success_counter = 0 #optional variable to count the number of success in all epi
 # training loop
 all_rewards = [] #list to store sum of collected rewards in each episode
 for i in range(episodes):
+
+    print("episode #", i+1, "/", episodes)
 
     observation, info = env.reset()
 
@@ -39,10 +55,8 @@ for i in range(episodes):
     done = False 
 
     while (not done): 
-        #os.system('clear')
-        #print("episode #", i+1, "/", episodes)
-        #env.render()
-        time.sleep(0.01)
+    
+        time.sleep(0.0001)
 
         # act randomly sometimes to allow exploration
         if np.random.uniform() < epsilon:
@@ -67,3 +81,19 @@ for i in range(episodes):
     # The more we learn, the less we take random actions
     epsilon -= decay*epsilon
 env.close()
+
+import pickle
+
+def save_qtable(qtable, filename="qtable_6_5000.pkl"):
+    with open(filename, "wb") as f:
+        pickle.dump(qtable, f)
+    print(f"Q-table saved to {filename}")
+
+save_qtable(qtable=qtable)
+
+plt.plot(all_rewards, linestyle='-')
+plt.xlabel("Episodes")
+plt.ylabel("Total Rewards")
+plt.title("Rewards per Episode")
+plt.savefig("qlearning_plot_6.png")
+plt.close()

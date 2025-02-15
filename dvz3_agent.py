@@ -27,6 +27,8 @@ success_counter = 0 #optional variable to count the number of success in all epi
 all_rewards = [] #list to store sum of collected rewards in each episode
 for i in range(episodes):
 
+    print("episode #", i+1, "/", episodes)
+
     observation, info = env.reset()
     target_num = info['target']
     # setting qtable final state (Q(terminal,.)) to zero
@@ -40,10 +42,8 @@ for i in range(episodes):
     done = False 
 
     while (not done): 
-        #os.system('clear')
-        #print("episode #", i+1, "/", episodes)
-        #env.render()
-        time.sleep(0.01)
+
+        time.sleep(0.001)
 
         # act randomly sometimes to allow exploration
         if np.random.uniform() < epsilon:
@@ -68,11 +68,11 @@ for i in range(episodes):
     # The more we learn, the less we take random actions
     epsilon -= decay*epsilon
 env.close()
-env.mqi.stop()
+
 
 plt.plot(all_rewards, linestyle='-')
 plt.xlabel("Episodes")
 plt.ylabel("Total Rewards")
 plt.title("Rewards per Episode")
-plt.savefig("qlearning_plot.png")
+plt.savefig("qlearning_plot_3.png")
 plt.close()
