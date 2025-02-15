@@ -2,7 +2,7 @@ import gymnasium as gym
 import blocksworld_env
 from stable_baselines3 import DQN
 
-env = gym.make("blocksworld_env/BlocksWorld-v0", render_mode="human")
+env = gym.make("blocksworld_env/BlocksWorld-v1", render_mode="human")
 observation, info = env.reset() 
 
 model = DQN("MultiInputPolicy", env, verbose=1)

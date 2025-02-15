@@ -99,7 +99,7 @@ class BlocksWorldEnv_v0(gym.Env):
         result = self.prolog_thread.query('current_state(State)')
         #print(result)
         self.state_str = result[0]['State']
-        print(f'initial state is: { self.state_str}')
+        #print(f'initial state is: { self.state_str}')
         self.state_num = self.states_dict[self.state_str]
 
 

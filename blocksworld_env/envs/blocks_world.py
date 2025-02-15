@@ -55,7 +55,13 @@ class BlocksWorldEnv(gym.Env):
         self.acttion_to_int = {val: key for key, val in self.actions_dict.items()}
         #print(self.acttion_to_int)
 
-        self.observation_space = spaces.Discrete(len(self.states_dict))
+        #self.observation_space = spaces.Discrete(len(self.states_dict))
+        self.observation_space = spaces.Dict(
+            {
+                "agent": spaces.Discrete(len(self.states_dict)),
+                "target": spaces.Discrete(len(self.states_dict))
+            }
+        )
 
         self.action_space = spaces.Discrete(len(self.actions_dict))
 
@@ -64,8 +70,8 @@ class BlocksWorldEnv(gym.Env):
 
         self.display = Display()
 
-    #def _get_obs(self):
-    #    return {"agent": self.state_num, "target": self.target_num}
+    def _get_obs(self):
+        return {"agent": self.state_num, "target": self.target_num}
     
     def _get_info(self):
         return {
@@ -77,7 +83,7 @@ class BlocksWorldEnv(gym.Env):
     def reset(self, seed=None, options=None):
 
         #generating a random number in the 1
-        rand_sate = np.random.randint(1,self.observation_space.n)
+        rand_sate = np.random.randint(1,self.observation_space['agent'].n)
 
         #finding the target state by selecting the last three characters
         self.target_str_3char = self.int_to_state[rand_sate][3:]
@@ -102,12 +108,12 @@ class BlocksWorldEnv(gym.Env):
         result = self.prolog_thread.query('current_state(State)')
         #print(result)
         self.state_str = result[0]['State'] + self.target_str_3char
-        print(f'state string is :{self.state_str}')
+        #print(f'state string is :{self.state_str}')
         self.state_num = self.states_dict[self.state_str]
 
 
-        observation = self.state_num
-        #observation = self._get_obs()['agent']
+        #observation = self.state_num
+        observation = self._get_obs()
         info = self._get_info()
 
         return observation,info
@@ -143,8 +149,8 @@ class BlocksWorldEnv(gym.Env):
         
 
         self.state_num = self.states_dict[self.state_str]
-        observation = self.state_num
-        #observation = self._get_obs()['agent']
+        #observation = self.state_num
+        observation = self._get_obs()
         info = self._get_info()
 
         #if self.render_mode == "human":
