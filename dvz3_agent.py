@@ -7,7 +7,7 @@ import time
 env = gym.make("blocksworld_env/BlocksWorld-v0", render_mode="human") 
 
 
-numstates= env.observation_space.n
+numstates= env.observation_space['agent'].n
 numactions = env.action_space.n
 # QTable : contains the Q-Values for every (state,action) pair
 qtable = np.random.rand(numstates, numactions).tolist()
@@ -32,7 +32,7 @@ for i in range(episodes):
     for action_num in range(numactions):
         qtable[target_num][action_num] = 0
 
-    state = observation
+    state = observation['agent']
     episode_reward = [] # list to store rewards in each step
     steps = 0
 
@@ -51,8 +51,8 @@ for i in range(episodes):
             action = qtable[state].index(max(qtable[state]))
 
         # take action
-        next_state, reward, done, truncated, info = env.step(action)
-        
+        next_state_dic, reward, done, truncated, info = env.step(action)
+        next_state = next_state_dic['agent']
         episode_reward.append(reward) #appending the collected reward for each action
 
         # update qtable value with Bellman equation

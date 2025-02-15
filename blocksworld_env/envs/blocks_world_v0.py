@@ -55,17 +55,24 @@ class BlocksWorldEnv_v0(gym.Env):
         self.acttion_to_int = {val: key for key, val in self.actions_dict.items()}
         #print(self.acttion_to_int)
 
-        self.observation_space = spaces.Discrete(len(self.states_dict))
+        self.observation_space = spaces.Dict(
+            {
+                "agent": spaces.Discrete(len(self.states_dict)),
+                "target": spaces.Discrete(len(self.states_dict))
+            }
+        )
+
+        #self.observation_space = spaces.Discrete(len(self.states_dict))
         #print(self.observation_space.n)
         self.action_space = spaces.Discrete(len(self.actions_dict))
 
-        self.init_state = list(self.states_dict.keys())[0]
-        print(f'initial state is: {self.init_state}')
+        #self.init_state = list(self.states_dict.keys())[0]
+        #print(f'initial state is: {self.init_state}')
 
         self.display = Display()
 
-    #def _get_obs(self):
-    #    return {"agent": self.state_num, "target": self.target_num}
+    def _get_obs(self):
+        return {"agent": self.state_num, "target": self.target_num}
     
     def _get_info(self):
         return {
@@ -77,8 +84,8 @@ class BlocksWorldEnv_v0(gym.Env):
     def reset(self, seed=None, options=None):
 
         #generating a random target for target
-        self.target_num = np.random.randint(1,120)
-        #self.target_num = 10
+        #self.target_num = np.random.randint(1,120)
+        self.target_num = 10
 
         # transforming number to state
         self.target_str = self.int_to_state[self.target_num] #target state
@@ -92,12 +99,15 @@ class BlocksWorldEnv_v0(gym.Env):
         result = self.prolog_thread.query('current_state(State)')
         #print(result)
         self.state_str = result[0]['State']
+        print(f'initial state is: { self.state_str}')
         self.state_num = self.states_dict[self.state_str]
 
 
-        observation = self.state_num
+        #observation = self.state_num
         #observation = self._get_obs()['agent']
+        observation = self._get_obs()
         info = self._get_info()
+        
 
         return observation,info
         
@@ -130,7 +140,8 @@ class BlocksWorldEnv_v0(gym.Env):
         self.display.step(self.state_str)
 
         self.state_num = self.states_dict[self.state_str]
-        observation = self.state_num
+        observation = self._get_obs()
+        #observation = self.state_num
         #observation = self._get_obs()['agent']
         info = self._get_info()
 
@@ -145,7 +156,7 @@ class BlocksWorldEnv_v0(gym.Env):
 
 if __name__ == '__main__':
 
-    env = BlocksWorldEnv()
+    env = BlocksWorldEnv_v0()
     #states = env.states_dict
     #print(states.get('1a4', 00))
 
