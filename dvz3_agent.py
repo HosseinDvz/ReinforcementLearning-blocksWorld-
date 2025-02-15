@@ -2,6 +2,7 @@ import gymnasium as gym
 import blocksworld_env
 import numpy as np
 import time
+import matplotlib.pyplot as plt
 
 
 env = gym.make("blocksworld_env/BlocksWorld-v0", render_mode="human") 
@@ -67,3 +68,11 @@ for i in range(episodes):
     # The more we learn, the less we take random actions
     epsilon -= decay*epsilon
 env.close()
+env.mqi.stop()
+
+plt.plot(all_rewards, linestyle='-')
+plt.xlabel("Episodes")
+plt.ylabel("Total Rewards")
+plt.title("Rewards per Episode")
+plt.savefig("qlearning_plot.png")
+plt.close()

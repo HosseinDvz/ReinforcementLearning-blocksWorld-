@@ -19,6 +19,7 @@ class BlocksWorldEnv_v0(gym.Env):
         # i.e. MultiDiscrete([size, size]).
 
         self.mqi = PrologMQI()
+    
         self.prolog_thread = self.mqi.create_thread()
         self.prolog_thread.query('[blocks_world]')
 
@@ -35,23 +36,31 @@ class BlocksWorldEnv_v0(gym.Env):
         
         actions = self.prolog_thread.query('action(A)')
         self.actions_dict = {}
-        #print(result)
+        #print(actions)
+        '''
+        prolog find all actions by this query. Python shows the results in different way. i.e
+        each action is a dict which contains another dic.
+        the following code will re-create the results in such a way that are returned by prolog.
+        The re-created results will be passed to prolog to see if it is valid move or not
+
+        '''
         for i,A in enumerate(actions):
-            action_string = A['A']['functor']
+            action_string = A['A']['functor'] # action "move" will be extracted from dict
             first=True
-            for arg in A['A']['args']:
+            for arg in A['A']['args']: # args are which, from, to
                 if first:
                     first = False
                     action_string += '('
                 else:
                     action_string += ','
                 action_string += str(arg)
-            action_string += ')'
-            self.actions_dict[i] = action_string
+            action_string += ')' #move(a,b,c) have been created at this point
+            self.actions_dict[i] = action_string # will be added to dict as a value
 
         #print(self.actions_dict)
 
-
+        # values of above dict are unique and can be used as key. This dic was created
+        # to easily map action atring to corrsponding number
         self.acttion_to_int = {val: key for key, val in self.actions_dict.items()}
         #print(self.acttion_to_int)
 
@@ -151,7 +160,7 @@ class BlocksWorldEnv_v0(gym.Env):
         #print(f'final current status: {self.state_str}', f'reward is: {reward}')
         return observation, reward, done, False, info
 
-
+        
         
 
 if __name__ == '__main__':
