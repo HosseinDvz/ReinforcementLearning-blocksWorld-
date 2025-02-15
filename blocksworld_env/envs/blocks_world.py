@@ -12,12 +12,8 @@ class BlocksWorldEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
     def __init__(self, render_mode=None, size=5):
-        self.size = size  # The size of the square grid
-        self.window_size = 512  # The size of the PyGame window
-
-        # Observations are dictionaries with the agent's and the target's location.
-        # Each location is encoded as an element of {0, ..., `size`}^2,
-        # i.e. MultiDiscrete([size, size]).
+        #self.size = size  # The size of the square grid
+        #self.window_size = 512  # The size of the PyGame window
 
         self.mqi = PrologMQI()
         self.prolog_thread = self.mqi.create_thread()
@@ -59,7 +55,7 @@ class BlocksWorldEnv(gym.Env):
         #print(self.acttion_to_int)
 
         self.observation_space = spaces.Discrete(len(self.states_dict))
-        #print(self.observation_space.n)
+
         self.action_space = spaces.Discrete(len(self.actions_dict))
 
         self.init_state = list(self.states_dict.keys())[0]
@@ -79,13 +75,24 @@ class BlocksWorldEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
 
-        #generating a random target for target
-        self.target_num = np.random.randint(1,14400)
-        #self.target_num = 10
-        # transforming number to state
-        self.target_str = self.int_to_state[self.target_num][3:] #target state
-        print(f'target is: {self.target_str}')
-        self.display.target = self.target_str
+        #generating a random number in the 1
+        rand_sate = np.random.randint(1,self.observation_space.n)
+
+        #finding the target state by selecting the last three characters
+        self.target_str_3char = self.int_to_state[rand_sate][3:]
+
+        #creating full target character - Example = full target char must be '12a12a'
+        self.full_target_str = self.target_str_3char + self.target_str_3char
+    
+        self.target_num = self.states_dict[self.full_target_str ]
+        '''
+        print(f'target stat number is {self.target_num}')
+        print(f'target is: {self.target_str_3char}')
+        print(f'full target char is {self.full_target_str}')
+        print(f'target from dic is {self.int_to_state[self.target_num]}')
+        '''
+
+        self.display.target = self.target_str_3char
 
         #issuing the prolog reset query
         self.prolog_thread.query('reset')
@@ -93,7 +100,7 @@ class BlocksWorldEnv(gym.Env):
         # retrieving current state - agent state
         result = self.prolog_thread.query('current_state(State)')
         #print(result)
-        self.state_str = result[0]['State'] + self.target_str
+        self.state_str = result[0]['State'] + self.target_str_3char
         print(f'state string is :{self.state_str}')
         self.state_num = self.states_dict[self.state_str]
 
@@ -119,9 +126,9 @@ class BlocksWorldEnv(gym.Env):
         done = False
         if result:
 
-            three_digit_stat = self.prolog_thread.query('current_state(State)')[0]['State']
-            done = (three_digit_stat == self.target_str)
-            self.state_str = three_digit_stat + self.target_str
+            three_char_state = self.prolog_thread.query('current_state(State)')[0]['State']
+            done = (three_char_state == self.target_str_3char)
+            self.state_str = three_char_state + self.target_str_3char
 
             if done:
                 reward = 100
@@ -132,6 +139,7 @@ class BlocksWorldEnv(gym.Env):
             reward = -100
         
         self.display.step(self.state_str)
+        
 
         self.state_num = self.states_dict[self.state_str]
         observation = self.state_num

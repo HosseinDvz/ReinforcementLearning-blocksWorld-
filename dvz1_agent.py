@@ -5,17 +5,14 @@ import time
 
 
 env = gym.make("blocksworld_env/BlocksWorld-v0", render_mode="human")
-observation, info = env.reset() 
-target_num = info['target']
+#observation, info = env.reset() 
+#target_num = info['target']
 
 numstates= env.observation_space.n
 numactions = env.action_space.n
 # QTable : contains the Q-Values for every (state,action) pair
 qtable = np.random.rand(numstates, numactions).tolist()
 
-# setting qtable final state (Q(terminal,.)) to zero
-for action_num in range(numactions):
-    qtable[target_num][action_num] = 0
 
 # hyperparameters
 episodes = 50  
@@ -30,10 +27,15 @@ all_rewards = [] #list to store sum of collected rewards in each episode
 for i in range(episodes):
 
     observation, info = env.reset()
+
+    # Q(terminal,.) = 0
+    target_num = info['target']
+    for action_num in range(numactions):
+        qtable[target_num][action_num] = 0
+
     state = observation
     episode_reward = [] # list to store rewards in each step
     steps = 0
-
     done = False 
 
     while (not done): 
