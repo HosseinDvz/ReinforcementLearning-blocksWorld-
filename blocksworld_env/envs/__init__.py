@@ -1,1 +1,2 @@
+from blocksworld_env.envs.blocks_world_v0 import BlocksWorldEnv_v0
 from blocksworld_env.envs.blocks_world import BlocksWorldEnv
