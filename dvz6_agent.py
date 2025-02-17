@@ -3,6 +3,7 @@ import blocksworld_env
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+import pickle
 
 
 env = gym.make("blocksworld_env/BlocksWorld-v1", render_mode="human")
@@ -26,10 +27,11 @@ def load_qtable(filename="qtable.pkl"):
     except FileNotFoundError:
         print("No saved Q-table found, starting fresh.")
         return None
-    
+
+#qtable = load_qtable('/home/aisd/Assn1/bw-HosseinDvz/qtable_6_3600.pkl')
 
 # hyperparameters
-episodes = 5000 
+episodes = 3600 
 alpha = 1 #learning rate
 gamma = 0.4 #increased gamma to assign more weight to value of next state
 epsilon = 0.01 #decrease epsilon to decrease the chance of taking random actions
@@ -44,6 +46,8 @@ for i in range(episodes):
 
     observation, info = env.reset()
 
+    print(f"target is: {info['target string']}")
+
     # Q(terminal,.) = 0
     target_num = info['target']
     for action_num in range(numactions):
@@ -56,7 +60,7 @@ for i in range(episodes):
 
     while (not done): 
     
-        time.sleep(0.0001)
+        #time.sleep(0.4)
 
         # act randomly sometimes to allow exploration
         if np.random.uniform() < epsilon:
@@ -82,9 +86,9 @@ for i in range(episodes):
     epsilon -= decay*epsilon
 env.close()
 
-import pickle
 
-def save_qtable(qtable, filename="qtable_6_5000.pkl"):
+
+def save_qtable(qtable, filename="qtable_6_6000.pkl"):
     with open(filename, "wb") as f:
         pickle.dump(qtable, f)
     print(f"Q-table saved to {filename}")

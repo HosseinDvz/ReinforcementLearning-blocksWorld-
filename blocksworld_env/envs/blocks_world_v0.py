@@ -87,8 +87,8 @@ class BlocksWorldEnv_v0(gym.Env):
     def reset(self, seed=None, options=None):
 
         #generating a random target for target
-        self.target_num = np.random.randint(1,120)
-        #self.target_num = 10
+        #self.target_num = np.random.randint(1,120)
+        self.target_num = 10
 
         # finding correspomding state string from number
         self.target_str = self.int_to_state[self.target_num] #target state
