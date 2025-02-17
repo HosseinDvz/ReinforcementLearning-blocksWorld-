@@ -77,7 +77,7 @@ class BlocksWorldEnv(gym.Env):
         self.init_state = list(self.states_dict.keys())[0]
         #print(f'initial state is: {self.init_state}')
 
-        #self.display = Display()
+        self.display = Display()
 
     def _get_obs(self):
         return {"agent": self.state_num, "target": self.target_num}
@@ -93,15 +93,15 @@ class BlocksWorldEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
 
-        self.target_str_3char = self.target_list[self.reset_index]
-        self.reset_index = (self.reset_index + 1) % len(self.target_list)  # Loop back when reaching the end
+        #self.target_str_3char = self.target_list[self.reset_index]
+        #self.reset_index = (self.reset_index + 1) % len(self.target_list)  # Loop back when reaching the end
 
         # generating a random number between 1, 14400
-        #rand_sate = np.random.randint(1,self.observation_space['agent'].n)
+        rand_sate = np.random.randint(1,self.observation_space['agent'].n)
 
 
         #finding the target state by selecting the last three characters
-        #self.target_str_3char = self.int_to_state[rand_sate][3:]
+        self.target_str_3char = self.int_to_state[rand_sate][3:]
 
         #creating full target character - Example = full target state char must be '12a12a'
         self.full_target_str = self.target_str_3char + self.target_str_3char
@@ -116,7 +116,7 @@ class BlocksWorldEnv(gym.Env):
 
 
         # Displaying target
-        #self.display.target = self.target_str_3char
+        self.display.target = self.target_str_3char
 
         #issuing the prolog reset query
         self.prolog_thread.query('reset')
@@ -160,7 +160,7 @@ class BlocksWorldEnv(gym.Env):
             reward = -100
         
         #commenting for fast training
-        #self.display.step(self.state_str) # works with 6 chars state
+        self.display.step(self.state_str) # works with 6 chars state
         
 
         self.state_num = self.states_dict[self.state_str]

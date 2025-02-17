@@ -16,7 +16,7 @@ numactions = env.action_space.n
 
 
     
-qtable = np.random.rand(numstates, numactions).tolist()
+#qtable = np.random.rand(numstates, numactions).tolist()
 
 def load_qtable(filename="qtable.pkl"):
     try:
@@ -28,7 +28,7 @@ def load_qtable(filename="qtable.pkl"):
         print("No saved Q-table found, starting fresh.")
         return None
 
-#qtable = load_qtable('/home/aisd/Assn1/bw-HosseinDvz/qtable_6_3600.pkl')
+qtable = load_qtable('/home/aisd/Assn1/bw-HosseinDvz/qtable_6_3600.pkl')
 
 # hyperparameters
 episodes = 3600 
@@ -60,7 +60,7 @@ for i in range(episodes):
 
     while (not done): 
     
-        #time.sleep(0.4)
+        time.sleep(0.4)
 
         # act randomly sometimes to allow exploration
         if np.random.uniform() < epsilon:
