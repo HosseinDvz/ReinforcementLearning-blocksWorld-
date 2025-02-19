@@ -16,7 +16,7 @@ numactions = env.action_space.n
 
 
     
-#qtable = np.random.rand(numstates, numactions).tolist()
+qtable = np.random.rand(numstates, numactions).tolist()
 
 def load_qtable(filename="qtable.pkl"):
     try:
@@ -28,10 +28,10 @@ def load_qtable(filename="qtable.pkl"):
         print("No saved Q-table found, starting fresh.")
         return None
 
-qtable = load_qtable('/home/aisd/Assn1/bw-HosseinDvz/qtable_6_3600.pkl')
+#qtable = load_qtable('/home/aisd/Assn1/bw-HosseinDvz/qtable_6_3600.pkl')
 
 # hyperparameters
-episodes = 3600 
+episodes = 100 
 alpha = 1 #learning rate
 gamma = 0.4 #increased gamma to assign more weight to value of next state
 epsilon = 0.01 #decrease epsilon to decrease the chance of taking random actions
@@ -60,7 +60,7 @@ for i in range(episodes):
 
     while (not done): 
     
-        time.sleep(0.4)
+        #time.sleep(0.01)
 
         # act randomly sometimes to allow exploration
         if np.random.uniform() < epsilon:
@@ -88,16 +88,17 @@ env.close()
 
 
 
-def save_qtable(qtable, filename="qtable_6_6000.pkl"):
+def save_qtable(qtable, filename="qtable_6_90.pkl"):
     with open(filename, "wb") as f:
         pickle.dump(qtable, f)
     print(f"Q-table saved to {filename}")
 
 save_qtable(qtable=qtable)
+save_qtable(qtable=all_rewards, filename='rewards_list.pkl')
 
 plt.plot(all_rewards, linestyle='-')
 plt.xlabel("Episodes")
 plt.ylabel("Total Rewards")
 plt.title("Rewards per Episode")
-plt.savefig("qlearning_plot_6.png")
+plt.savefig("qlearning_plot_100Epis.png")
 plt.close()

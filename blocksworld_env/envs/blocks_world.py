@@ -93,15 +93,15 @@ class BlocksWorldEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
 
-        #self.target_str_3char = self.target_list[self.reset_index]
-        #self.reset_index = (self.reset_index + 1) % len(self.target_list)  # Loop back when reaching the end
+        self.target_str_3char = self.target_list[self.reset_index]
+        self.reset_index = (self.reset_index + 1) % len(self.target_list)  # Loop back when reaching the end
 
         # generating a random number between 1, 14400
-        rand_sate = np.random.randint(1,self.observation_space['agent'].n)
+        #rand_sate = np.random.randint(1,self.observation_space['agent'].n)
 
 
         #finding the target state by selecting the last three characters
-        self.target_str_3char = self.int_to_state[rand_sate][3:]
+        #self.target_str_3char = self.int_to_state[rand_sate][3:]
 
         #creating full target character - Example = full target state char must be '12a12a'
         self.full_target_str = self.target_str_3char + self.target_str_3char
