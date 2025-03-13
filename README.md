@@ -1,4 +1,3 @@
-# Blocks World
 # Blocks World Problem with Prolog Integration
 
 
