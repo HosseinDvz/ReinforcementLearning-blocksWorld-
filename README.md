@@ -20,7 +20,7 @@ In this implementation, we have **three blocks**: **A**, **B**, and **C**, and *
   - **Block B** is in position 2 (on the table)
   - **Block C** is placed on top of **Block A** (in position 1)
 
-The environment for this problem is set up using **Gymnasium**, a toolkit for developing and comparing RL algorithms. I will provide instructions later on how to set up the environment for running this simulation.
+The environment for this problem is set up using **Gymnasium**, a toolkit for developing and comparing RL algorithms, and **Pygame** to display the blocks. I will provide instructions later on how to set up the environment for running this simulation.
 
 The **target configuration** represents the desired final state of the blocks, which the agent needs to achieve by taking a sequence of actions.
 
